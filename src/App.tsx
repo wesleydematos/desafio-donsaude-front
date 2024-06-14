@@ -1,5 +1,12 @@
-export default function App() {
+import { Providers } from "./providers";
+import RoutesMain from "./routes";
+
+function App() {
   return (
-    <h1 className="text-3xl font-bold underline text-red-600">Hello world!</h1>
+    <Providers>
+      <RoutesMain />
+    </Providers>
   );
 }
+
+export default App;
