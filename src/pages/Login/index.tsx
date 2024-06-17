@@ -92,6 +92,7 @@ export default function Login() {
                 id="email"
                 type="email"
                 pl="2.5rem"
+                borderRadius="12px"
                 placeholder="Preencha com seu email"
                 {...register("email")}
               />
@@ -112,6 +113,7 @@ export default function Login() {
                 id="password"
                 type={showPassword ? "text" : "password"}
                 px="2.5rem"
+                borderRadius="12px"
                 placeholder="Preencha com sua senha"
                 {...register("password")}
               />
