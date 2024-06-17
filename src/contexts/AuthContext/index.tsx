@@ -73,6 +73,8 @@ function AuthProvider({ children }: IAuthProviderProps) {
         } else {
           setAuthInfo({} as IAuthCredentials);
         }
+
+        navigate("/colaborators");
       } catch (error) {
         console.log(error);
       } finally {
