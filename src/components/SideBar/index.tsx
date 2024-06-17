@@ -43,7 +43,13 @@ export default function SideBar() {
   }, []);
 
   return (
-    <Box display={{ base: "none", xl: "flex" }} as="aside" h="full" w="220px">
+    <Box
+      display={{ base: "none", xl: "flex" }}
+      as="aside"
+      h="full"
+      w="220px"
+      color="grey.base"
+    >
       <Box
         display="flex"
         flexDirection="column"
