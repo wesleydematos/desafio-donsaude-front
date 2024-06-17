@@ -1,5 +1,5 @@
 import { Box, Flex } from "@chakra-ui/react";
-import { SideBar } from "../../components";
+import { CustomHeader, SideBar } from "../../components";
 import { Outlet } from "react-router-dom";
 
 export default function BaseLayout() {
@@ -8,10 +8,9 @@ export default function BaseLayout() {
       <Flex height="100%">
         <SideBar />
         <Flex direction="column" flex="1" overflow="hidden">
-          <Box as="header" height="88px">
-            Header
-          </Box>
-          <Box flex="1" overflow="auto">
+          <CustomHeader />
+
+          <Box flex="1" overflow="auto" mt="88px">
             <Outlet />
           </Box>
         </Flex>
