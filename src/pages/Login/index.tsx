@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   Checkbox,
@@ -12,17 +12,30 @@ import {
   InputRightElement,
   Text,
 } from "@chakra-ui/react";
-import background from "../../assets/images/background.png";
-import logo from "../../assets/images/logo-g.png";
 import { CustomButton, CustomInput } from "../../components";
 import { AiOutlineEye, AiOutlineUser } from "react-icons/ai";
 import { SlLock } from "react-icons/sl";
 import { RiEyeCloseLine } from "react-icons/ri";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useAuth } from "../../contexts/AuthContext";
+import { signInSchema } from "../../schemas/signInSchema";
+import { SignInCredentials } from "../../contexts/AuthContext/interfaces";
+import background from "../../assets/images/background.png";
+import logo from "../../assets/images/logo-g.png";
 
 export default function Login() {
-  const isLoading = false;
+  const { signIn, getAuthInfo } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { isSubmitting, errors },
+  } = useForm({
+    resolver: yupResolver(signInSchema),
+  });
 
   const handleTogglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -32,6 +45,14 @@ export default function Login() {
     setRememberMe(!rememberMe);
   };
 
+  const handleSignIn: SubmitHandler<SignInCredentials> = async (values) => {
+    await signIn({ ...values });
+  };
+
+  useEffect(() => {
+    getAuthInfo();
+  }, []);
+
   return (
     <Box
       h="100vh"
@@ -40,6 +61,8 @@ export default function Login() {
       backgroundPosition="center"
       backgroundRepeat="no-repeat"
       backgroundSize="cover"
+      color="grey.bold"
+      fontSize="14px"
     >
       <Flex align="center" justify="center" height="100%">
         <Flex
@@ -48,11 +71,13 @@ export default function Login() {
           px={10}
           py="50px"
           alignItems="center"
-          rounded="md"
+          borderRadius="16px"
           boxShadow="lg"
           backgroundColor="white"
           w="full"
           maxWidth="md"
+          as="form"
+          onSubmit={handleSubmit(handleSignIn)}
         >
           <Image src={logo} alt="Logo" mb={4} w="188px" h="56px" />
 
@@ -64,11 +89,16 @@ export default function Login() {
                 children={<AiOutlineUser color="gray.300" />}
               />
               <CustomInput
-                pl="2.5rem"
+                id="email"
                 type="email"
+                pl="2.5rem"
                 placeholder="Preencha com seu email"
+                {...register("email")}
               />
             </InputGroup>
+            {errors.email && (
+              <Text color="primary.base">{errors.email.message}</Text>
+            )}
           </FormControl>
 
           <FormControl id="password">
@@ -79,9 +109,11 @@ export default function Login() {
                 children={<SlLock color="gray.300" />}
               />
               <CustomInput
-                px="2.5rem"
+                id="password"
                 type={showPassword ? "text" : "password"}
+                px="2.5rem"
                 placeholder="Preencha com sua senha"
+                {...register("password")}
               />
               <InputRightElement width="4.5rem">
                 <IconButton
@@ -95,6 +127,9 @@ export default function Login() {
                 />
               </InputRightElement>
             </InputGroup>
+            {errors.password && (
+              <Text color="primary.base">{errors.password.message}</Text>
+            )}
           </FormControl>
 
           <Flex justifyContent="flex-start" w="full">
@@ -104,7 +139,7 @@ export default function Login() {
           </Flex>
 
           <Box w="full" borderRadius="500px" overflow="hidden">
-            <CustomButton action={() => {}} isLoading={isLoading} w="full">
+            <CustomButton type="submit" isLoading={isSubmitting} w="full">
               Entrar
             </CustomButton>
           </Box>
