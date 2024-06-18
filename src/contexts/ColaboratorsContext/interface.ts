@@ -16,3 +16,9 @@ export interface IColaborator {
 
 export interface ICreateColaborator
   extends Omit<IColaborator, "photo" | "id"> {}
+
+export interface IAllColaboratorsResponse {
+  data: IColaborator[];
+  count: number;
+  actual_page: number;
+}

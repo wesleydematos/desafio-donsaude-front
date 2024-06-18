@@ -1,6 +1,6 @@
 import { useContext, createContext, useState } from "react";
 import {
-  IColaborator,
+  IAllColaboratorsResponse,
   IColaboratorProviderProps,
   ICreateColaborator,
 } from "./interface";
@@ -13,10 +13,10 @@ import { useAuth } from "../AuthContext";
 type ColaboratorContextData = {
   createColaborator(data: ICreateColaborator): Promise<void>;
   loading: boolean;
-  colaborators: IColaborator[];
+  allColaborators: IAllColaboratorsResponse;
   getAllColaborators(
-    queryParams: IQueryParams
-  ): Promise<IColaborator[] | undefined>;
+    queryParams?: IQueryParams
+  ): Promise<IAllColaboratorsResponse | undefined>;
 };
 
 const ColaboratorContext = createContext({} as ColaboratorContextData);
@@ -25,7 +25,9 @@ function ColaboratorProvider({ children }: IColaboratorProviderProps) {
   const { setHeadersApi } = useAuth();
   const toast = useToast();
   const [loading, setLoading] = useState(false);
-  const [colaborators, setAllColaborators] = useState([] as IColaborator[]);
+  const [allColaborators, setAllColaborators] = useState(
+    {} as IAllColaboratorsResponse
+  );
 
   async function createColaborator(data: ICreateColaborator) {
     try {
@@ -50,7 +52,7 @@ function ColaboratorProvider({ children }: IColaboratorProviderProps) {
     }
   }
 
-  async function getAllColaborators(queryParams: IQueryParams) {
+  async function getAllColaborators(queryParams?: IQueryParams) {
     try {
       setLoading(true);
       setHeadersApi();
@@ -70,7 +72,12 @@ function ColaboratorProvider({ children }: IColaboratorProviderProps) {
 
   return (
     <ColaboratorContext.Provider
-      value={{ createColaborator, colaborators, getAllColaborators, loading }}
+      value={{
+        createColaborator,
+        allColaborators,
+        getAllColaborators,
+        loading,
+      }}
     >
       {children}
     </ColaboratorContext.Provider>
