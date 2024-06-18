@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   Divider,
   Flex,
@@ -19,14 +20,17 @@ import {
   PiPasswordLight,
   PiPencilSimpleLight,
   PiPlusCircle,
+  PiShieldCheckLight,
   PiShieldSlashLight,
   PiSlidersHorizontalLight,
   PiUserLight,
 } from "react-icons/pi";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Colaborators() {
   const [colaboratorAccessType, setColaboratorAccessType] = useState("allowed");
+  const navigate = useNavigate();
 
   return (
     <Flex
@@ -46,15 +50,21 @@ export default function Colaborators() {
         fontWeight={700}
       >
         <Text lineHeight="30px">Colaborador</Text>
-        <CustomButton borderRadius="500px">
-          <PiPlusCircle style={{ marginRight: "5px", fontSize: "24px" }} /> Nova
-          categoria
+        <CustomButton
+          borderRadius="500px"
+          onClick={() => navigate("/colaborators/new")}
+        >
+          <PiPlusCircle style={{ marginRight: "5px", fontSize: "24px" }} /> Novo
+          colaborador
         </CustomButton>
       </Flex>
 
       <Flex bg="white" borderRadius="500px" w="full" p={1} h="fit-content">
         <Button
           onClick={() => setColaboratorAccessType("allowed")}
+          display="flex"
+          alignItems="center"
+          gap={2}
           bg={colaboratorAccessType === "allowed" ? "primary.light" : "inherit"}
           w="50%"
           color={
@@ -64,10 +74,25 @@ export default function Colaborators() {
           _active={{ bg: `` }}
           borderRadius="500px"
         >
+          <PiShieldCheckLight />
           Com acesso ao sistema
+          <Box
+            px={1}
+            bg={
+              colaboratorAccessType === "allowed" ? "primary.base" : "grey.bold"
+            }
+            borderRadius="500px"
+            color="white"
+            fontSize="14px"
+          >
+            0
+          </Box>
         </Button>
         <Button
           onClick={() => setColaboratorAccessType("not-allowed")}
+          display="flex"
+          alignItems="center"
+          gap={2}
           bg={
             colaboratorAccessType === "not-allowed"
               ? "primary.light"
@@ -83,7 +108,21 @@ export default function Colaborators() {
           _active={{ bg: `` }}
           borderRadius="500px"
         >
+          <PiShieldSlashLight />
           Sem acesso ao sistema
+          <Box
+            px={1}
+            bg={
+              colaboratorAccessType === "not-allowed"
+                ? "primary.base"
+                : "grey.bold"
+            }
+            borderRadius="500px"
+            color="white"
+            fontSize="14px"
+          >
+            0
+          </Box>
         </Button>
       </Flex>
 
