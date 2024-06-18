@@ -4,6 +4,7 @@ import {
   IAllColaboratorsResponse,
   IColaborator,
   ICreateColaborator,
+  IEditColaborator,
 } from "../../contexts/ColaboratorsContext/interface";
 
 export interface IQueryParams {
@@ -20,6 +21,11 @@ interface IColaboratorHTTPService {
   getAllColaborators: (
     queryParams?: IQueryParams
   ) => Promise<AxiosResponse<IAllColaboratorsResponse>>;
+  getColaboratorById: (id: string) => Promise<AxiosResponse<IColaborator>>;
+  updateColaborator: (
+    id: string,
+    data: IEditColaborator
+  ) => Promise<AxiosResponse<IColaborator>>;
 }
 
 const urlPath = "/colaborators";
@@ -33,6 +39,19 @@ const ColaboratorHTTPService: IColaboratorHTTPService = {
     queryParams?
   ): Promise<AxiosResponse<IAllColaboratorsResponse>> {
     return api.get(urlPath, { params: queryParams });
+  },
+
+  getColaboratorById: function (
+    id: string
+  ): Promise<AxiosResponse<IColaborator>> {
+    return api.get(`${urlPath}/${id}`);
+  },
+
+  updateColaborator: function (
+    id: string,
+    data: IEditColaborator
+  ): Promise<AxiosResponse<IColaborator>> {
+    return api.put(`${urlPath}/${id}`, data);
   },
 };
 

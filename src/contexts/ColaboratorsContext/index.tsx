@@ -1,8 +1,10 @@
 import { useContext, createContext, useState } from "react";
 import {
   IAllColaboratorsResponse,
+  IColaborator,
   IColaboratorProviderProps,
   ICreateColaborator,
+  IEditColaborator,
 } from "./interface";
 import ColaboratorHTTPService, {
   IQueryParams,
@@ -17,6 +19,9 @@ type ColaboratorContextData = {
   getAllColaborators(
     queryParams?: IQueryParams
   ): Promise<IAllColaboratorsResponse | undefined>;
+  findColaboratorById(id: string): Promise<void>;
+  colaborator: IColaborator;
+  updateColaborator(id: string, data: IEditColaborator): Promise<void>;
 };
 
 const ColaboratorContext = createContext({} as ColaboratorContextData);
@@ -28,6 +33,7 @@ function ColaboratorProvider({ children }: IColaboratorProviderProps) {
   const [allColaborators, setAllColaborators] = useState(
     {} as IAllColaboratorsResponse
   );
+  const [colaborator, setColaborator] = useState({} as IColaborator);
 
   async function createColaborator(data: ICreateColaborator) {
     try {
@@ -70,6 +76,52 @@ function ColaboratorProvider({ children }: IColaboratorProviderProps) {
     }
   }
 
+  async function findColaboratorById(id: string) {
+    setColaborator({} as IColaborator);
+
+    try {
+      setLoading(true);
+      setHeadersApi();
+
+      const { data } = await ColaboratorHTTPService.getColaboratorById(id);
+
+      setColaborator(data);
+    } catch (error) {
+      toast({
+        title: "Colaborador não encontrado!",
+        position: "top-right",
+        isClosable: false,
+        status: "warning",
+      });
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function updateColaborator(id: string, data: IEditColaborator) {
+    try {
+      await ColaboratorHTTPService.updateColaborator(id, data);
+
+      toast({
+        title: "Colaborador editado com sucesso!",
+        position: "top-right",
+        isClosable: false,
+        status: "success",
+      });
+
+      await findColaboratorById(id);
+    } catch (error: any) {
+      toast({
+        title: `Não foi possível editar o colaborador${
+          error.response.data.message ? `: ${error.response.data.message}` : "."
+        } `,
+        position: "top-right",
+        isClosable: false,
+        status: "error",
+      });
+    }
+  }
+
   return (
     <ColaboratorContext.Provider
       value={{
@@ -77,6 +129,9 @@ function ColaboratorProvider({ children }: IColaboratorProviderProps) {
         allColaborators,
         getAllColaborators,
         loading,
+        colaborator,
+        findColaboratorById,
+        updateColaborator,
       }}
     >
       {children}

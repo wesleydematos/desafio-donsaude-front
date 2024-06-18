@@ -24,3 +24,10 @@ export const createColaboratorSchema = yup.object().shape({
       "Telefone deve estar no formato DDD + número (ex: 81987654321)"
     ),
 });
+
+export const editColaboratorSchema = yup.object().shape({
+  email: yup.string().notRequired(),
+  documentNumber: yup.string().notRequired(),
+  name: yup.string().notRequired(),
+  phone: yup.string().notRequired(),
+});
