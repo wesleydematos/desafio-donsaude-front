@@ -13,8 +13,11 @@ import {
   Thead,
   Tr,
 } from "@chakra-ui/react";
-import { CustomButton, CustomInput } from "../../components";
+import { CustomButton, CustomInput, Loading } from "../../components";
 import {
+  PiCaretDownLight,
+  PiCaretLeftLight,
+  PiCaretRightLight,
   PiClockCounterClockwiseLight,
   PiMagnifyingGlass,
   PiPasswordLight,
@@ -25,12 +28,51 @@ import {
   PiSlidersHorizontalLight,
   PiUserLight,
 } from "react-icons/pi";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useColaborator } from "../../contexts/ColaboratorsContext";
+import { IQueryParams } from "../../infrastructure/service/colaboratorHTTPService";
+import { IColaborator } from "../../contexts/ColaboratorsContext/interface";
+import { formatCPF } from "../../utils/formatCpf";
+import { formatPhoneNumber } from "../../utils/formatPhone";
 
 export default function Colaborators() {
+  const { getAllColaborators, allColaborators, loading } = useColaborator();
   const [colaboratorAccessType, setColaboratorAccessType] = useState("allowed");
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [params, setParams] = useState({
+    isAllowed: true,
+    page: page,
+    limit: 10,
+  } as IQueryParams);
   const navigate = useNavigate();
+
+  const getAll = async (params: IQueryParams) => {
+    const response = await getAllColaborators(params);
+    const totalItems = response!.count;
+    const totalPages = Math.ceil(totalItems / params.limit!);
+    setTotalPages(totalPages);
+  };
+
+  useEffect(() => {
+    getAll(params);
+  }, [params]);
+
+  useEffect(() => {
+    setParams((prevParams) => ({
+      ...prevParams,
+      page: page,
+    }));
+  }, [page]);
+
+  const handlePreviousPage = () => {
+    setPage((prevPage) => Math.max(prevPage - 1, 1));
+  };
+
+  const handleNextPage = () => {
+    setPage((prevPage) => Math.min(prevPage + 1, totalPages));
+  };
 
   return (
     <Flex
@@ -59,9 +101,19 @@ export default function Colaborators() {
         </CustomButton>
       </Flex>
 
-      <Flex bg="white" borderRadius="500px" w="full" p={1} h="fit-content">
+      <Flex
+        bg="white"
+        borderRadius="500px"
+        justifyContent="space-between"
+        w="full"
+        p={1}
+        h="fit-content"
+      >
         <Button
-          onClick={() => setColaboratorAccessType("allowed")}
+          onClick={() => {
+            setColaboratorAccessType("allowed");
+            setParams({ ...params, isAllowed: true });
+          }}
           display="flex"
           alignItems="center"
           gap={2}
@@ -85,11 +137,14 @@ export default function Colaborators() {
             color="white"
             fontSize="14px"
           >
-            0
+            4
           </Box>
         </Button>
         <Button
-          onClick={() => setColaboratorAccessType("not-allowed")}
+          onClick={() => {
+            setColaboratorAccessType("not-allowed");
+            setParams({ ...params, isAllowed: false });
+          }}
           display="flex"
           alignItems="center"
           gap={2}
@@ -121,7 +176,7 @@ export default function Colaborators() {
             color="white"
             fontSize="14px"
           >
-            0
+            4
           </Box>
         </Button>
       </Flex>
@@ -167,52 +222,119 @@ export default function Colaborators() {
 
         <Divider mt={2} />
 
-        <Table variant="simple" bgColor="white" mb={2}>
-          <Thead>
-            <Tr>
-              <Th>Nome</Th>
-              <Th>Email</Th>
-              <Th>CPF</Th>
-              <Th>Telefone</Th>
-              <Th w="15%">Ações</Th>
-            </Tr>
-          </Thead>
+        {loading ? (
+          <Loading />
+        ) : (
+          <Table variant="simple" bgColor="white" mb={2}>
+            <Thead>
+              <Tr>
+                <Th>Nome</Th>
+                <Th>Email</Th>
+                <Th>CPF</Th>
+                <Th>Telefone</Th>
+                <Th w="15%">Ações</Th>
+              </Tr>
+            </Thead>
+            {allColaborators.data?.length > 0 ? (
+              allColaborators.data.map((colaborator: IColaborator) => (
+                <Tbody key={colaborator.id}>
+                  <Tr>
+                    <Td color="black" fontWeight={700}>
+                      <Flex alignItems="center" gap={2}>
+                        <Flex
+                          p={2}
+                          borderRadius="500px"
+                          bg="grey.medium"
+                          alignContent="center"
+                        >
+                          <PiUserLight />
+                        </Flex>{" "}
+                        {colaborator.name}
+                      </Flex>
+                    </Td>
+                    <Td color="black" fontWeight={700}>
+                      {colaborator.email}
+                    </Td>
+                    <Td color="black" fontWeight={700}>
+                      {formatCPF(colaborator.documentNumber)}
+                    </Td>
+                    <Td color="black" fontWeight={700}>
+                      {formatPhoneNumber(colaborator.phone)}
+                    </Td>
+                    <Td w="15%" textAlign="right">
+                      <Flex gap={3} fontWeight={700} fontSize="20px">
+                        <PiPencilSimpleLight
+                          onClick={() =>
+                            navigate(`/colaborators/edit/${colaborator.id}`)
+                          }
+                          style={{ cursor: "pointer" }}
+                        />
+                        <PiShieldSlashLight style={{ cursor: "pointer" }} />
+                        <PiPasswordLight style={{ cursor: "pointer" }} />
+                        <PiClockCounterClockwiseLight
+                          style={{ cursor: "pointer" }}
+                        />
+                      </Flex>
+                    </Td>
+                  </Tr>
+                </Tbody>
+              ))
+            ) : (
+              <></>
+            )}
+          </Table>
+        )}
 
-          <Tbody>
-            <Tr>
-              <Td color="black" fontWeight={700}>
-                <Flex alignItems="center" gap={2}>
-                  <Flex
-                    p={2}
-                    borderRadius="500px"
-                    bg="grey.medium"
-                    alignContent="center"
-                  >
-                    <PiUserLight />
-                  </Flex>{" "}
-                  Nome
-                </Flex>
-              </Td>
-              <Td color="black" fontWeight={700}>
-                email@email.com
-              </Td>
-              <Td color="black" fontWeight={700}>
-                133.666.166-77
-              </Td>
-              <Td color="black" fontWeight={700}>
-                (81) 9 9595-0404
-              </Td>
-              <Td w="15%" textAlign="right">
-                <Flex gap={3} fontWeight={700} fontSize="20px">
-                  <PiPencilSimpleLight />
-                  <PiShieldSlashLight />
-                  <PiPasswordLight />
-                  <PiClockCounterClockwiseLight />
-                </Flex>
-              </Td>
-            </Tr>
-          </Tbody>
-        </Table>
+        {allColaborators.data?.length > 0 && (
+          <Flex
+            px={7}
+            py={3}
+            w="full"
+            justifyContent="space-between"
+            color="grey.base"
+          >
+            <Text display="flex" gap={1}>
+              Mostrando{" "}
+              <Text
+                display="flex"
+                alignItems="center"
+                w="fit-content"
+                as="span"
+                borderRadius="500px"
+                bg="grey.medium"
+                color="black"
+                px={2}
+                gap={1}
+              >
+                {allColaborators.data?.length || 0}
+                <PiCaretDownLight size="10px" />
+              </Text>
+              de
+              <Text as="span" color="black">
+                {allColaborators.count || 0}
+              </Text>
+              resultados
+            </Text>
+
+            <Flex alignItems="center" gap={2} fontWeight={700} color="black">
+              <PiCaretLeftLight
+                style={{ cursor: page > 1 ? "pointer" : "not-allowed" }}
+                onClick={() => {
+                  page > 1 ? handlePreviousPage() : null;
+                }}
+              />
+              {page}
+              <PiCaretRightLight
+                style={{
+                  cursor: page < totalPages ? "pointer" : "not-allowed",
+                }}
+                onClick={() => {
+                  page < totalPages ? handleNextPage() : null;
+                }}
+              />
+            </Flex>
+          </Flex>
+        )}
       </Flex>
     </Flex>
   );

@@ -1,6 +1,7 @@
 import { AxiosResponse } from "axios";
 import { api } from "../api";
 import {
+  IAllColaboratorsResponse,
   IColaborator,
   ICreateColaborator,
 } from "../../contexts/ColaboratorsContext/interface";
@@ -18,7 +19,7 @@ interface IColaboratorHTTPService {
   ) => Promise<AxiosResponse<IColaborator>>;
   getAllColaborators: (
     queryParams?: IQueryParams
-  ) => Promise<AxiosResponse<IColaborator[]>>;
+  ) => Promise<AxiosResponse<IAllColaboratorsResponse>>;
 }
 
 const urlPath = "/colaborators";
@@ -30,7 +31,7 @@ const ColaboratorHTTPService: IColaboratorHTTPService = {
 
   getAllColaborators: function (
     queryParams?
-  ): Promise<AxiosResponse<IColaborator[]>> {
+  ): Promise<AxiosResponse<IAllColaboratorsResponse>> {
     return api.get(urlPath, { params: queryParams });
   },
 };
