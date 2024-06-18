@@ -104,7 +104,6 @@ export default function CustomHeader() {
                 children={<PiMagnifyingGlass size="20px" />}
               />
               <CustomInput
-                id="password"
                 px="2.5rem"
                 placeholder="Buscar"
                 borderRadius="16px"
