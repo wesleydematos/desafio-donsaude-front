@@ -28,8 +28,11 @@ import {
   PiUser,
 } from "react-icons/pi";
 import CustomInput from "../CustomInput";
+import { CiLogout } from "react-icons/ci";
+import { useAuth } from "../../contexts/AuthContext";
 
 export default function CustomHeader() {
+  const { signOut } = useAuth();
   const navigate = useNavigate();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [selectedPage, setselectedPage] = useState("");
@@ -133,6 +136,16 @@ export default function CustomHeader() {
               px={{ base: 2, xl: 3 }}
             >
               <PiUser />
+            </Flex>
+
+            <Flex
+              justifyContent="center"
+              alignItems="center"
+              fontSize="20px"
+              cursor="pointer"
+              onClick={signOut}
+            >
+              <CiLogout />
             </Flex>
           </Flex>
         </Flex>
