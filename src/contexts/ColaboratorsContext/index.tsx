@@ -1,11 +1,22 @@
-import { useContext, createContext } from "react";
-import { IColaboratorProviderProps, ICreateColaborator } from "./interface";
-import ColaboratorHTTPService from "../../infrastructure/service/colaboratorHTTPService";
+import { useContext, createContext, useState } from "react";
+import {
+  IColaborator,
+  IColaboratorProviderProps,
+  ICreateColaborator,
+} from "./interface";
+import ColaboratorHTTPService, {
+  IQueryParams,
+} from "../../infrastructure/service/colaboratorHTTPService";
 import { useToast } from "@chakra-ui/react";
 import { useAuth } from "../AuthContext";
 
 type ColaboratorContextData = {
   createColaborator(data: ICreateColaborator): Promise<void>;
+  loading: boolean;
+  colaborators: IColaborator[];
+  getAllColaborators(
+    queryParams: IQueryParams
+  ): Promise<IColaborator[] | undefined>;
 };
 
 const ColaboratorContext = createContext({} as ColaboratorContextData);
@@ -13,6 +24,8 @@ const ColaboratorContext = createContext({} as ColaboratorContextData);
 function ColaboratorProvider({ children }: IColaboratorProviderProps) {
   const { setHeadersApi } = useAuth();
   const toast = useToast();
+  const [loading, setLoading] = useState(false);
+  const [colaborators, setAllColaborators] = useState([] as IColaborator[]);
 
   async function createColaborator(data: ICreateColaborator) {
     try {
@@ -37,8 +50,28 @@ function ColaboratorProvider({ children }: IColaboratorProviderProps) {
     }
   }
 
+  async function getAllColaborators(queryParams: IQueryParams) {
+    try {
+      setLoading(true);
+      setHeadersApi();
+
+      const { data } = await ColaboratorHTTPService.getAllColaborators(
+        queryParams
+      );
+
+      setAllColaborators(data);
+      return data;
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
-    <ColaboratorContext.Provider value={{ createColaborator }}>
+    <ColaboratorContext.Provider
+      value={{ createColaborator, colaborators, getAllColaborators, loading }}
+    >
       {children}
     </ColaboratorContext.Provider>
   );
