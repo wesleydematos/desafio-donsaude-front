@@ -12,7 +12,7 @@ import {
   InputRightElement,
   Text,
 } from "@chakra-ui/react";
-import { CustomButton, CustomInput } from "../../components";
+import { CustomButton, CustomInput, FormBackground } from "../../components";
 import { AiOutlineEye, AiOutlineUser } from "react-icons/ai";
 import { SlLock } from "react-icons/sl";
 import { RiEyeCloseLine } from "react-icons/ri";
@@ -65,20 +65,7 @@ export default function Login() {
       fontSize="14px"
     >
       <Flex align="center" justify="center" height="100%">
-        <Flex
-          flexDirection="column"
-          gap={4}
-          px={10}
-          py="50px"
-          alignItems="center"
-          borderRadius="16px"
-          boxShadow="lg"
-          backgroundColor="white"
-          w="full"
-          maxWidth="md"
-          as="form"
-          onSubmit={handleSubmit(handleSignIn)}
-        >
+        <FormBackground maxWidth="md" onSubmit={handleSubmit(handleSignIn)}>
           <Image src={logo} alt="Logo" mb={4} w="188px" h="56px" />
 
           <FormControl id="email">
@@ -89,7 +76,6 @@ export default function Login() {
                 children={<AiOutlineUser color="gray.300" />}
               />
               <CustomInput
-                id="email"
                 type="email"
                 pl="2.5rem"
                 borderRadius="12px"
@@ -110,7 +96,6 @@ export default function Login() {
                 children={<SlLock color="gray.300" />}
               />
               <CustomInput
-                id="password"
                 type={showPassword ? "text" : "password"}
                 px="2.5rem"
                 borderRadius="12px"
@@ -149,7 +134,7 @@ export default function Login() {
           <Text fontWeight="bold" color="primary.base" cursor="pointer">
             Esqueci minha senha
           </Text>
-        </Flex>
+        </FormBackground>
       </Flex>
     </Box>
   );
