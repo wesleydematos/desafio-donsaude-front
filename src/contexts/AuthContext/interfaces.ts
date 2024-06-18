@@ -6,7 +6,7 @@ export interface IAuthProviderProps {
 }
 
 export interface IAuthCredentials {
-  accessToken: string;
+  token: string;
   expiresIn: number;
   colaborator: IColaborator;
 }

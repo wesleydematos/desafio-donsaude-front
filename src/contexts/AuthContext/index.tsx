@@ -88,11 +88,10 @@ function AuthProvider({ children }: IAuthProviderProps) {
   async function signIn({ email, password }: SignInCredentials) {
     try {
       const response = await AuthHTTPService.login(email, password);
-
-      const { expiresIn, accessToken, colaborator } = response.data;
+      const { expiresIn, token, colaborator } = response.data;
 
       setAuthInfo({
-        accessToken,
+        token,
         expiresIn,
         colaborator,
       });
@@ -100,17 +99,17 @@ function AuthProvider({ children }: IAuthProviderProps) {
       localStorage.setItem(
         "colaborator",
         JSON.stringify({
-          accessToken,
+          token,
           expiresIn,
           colaborator,
         })
       );
 
-      localStorage.setItem("@Token-DonSaude", JSON.stringify(accessToken));
+      localStorage.setItem("@Token-DonSaude", JSON.stringify(token));
 
       setColaborator(colaborator);
 
-      api.defaults.headers["Authorization"] = `Bearer ${accessToken}`;
+      api.defaults.headers["Authorization"] = `Bearer ${token}`;
 
       navigate(`/colaborators`);
 
